@@ -4,4 +4,6 @@ use (
 	./01-basics
 	./02-intermediate
 	./03-advanced
+	./04-dsa
+	./05-integrations
 )

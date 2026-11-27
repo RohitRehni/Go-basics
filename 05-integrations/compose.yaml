@@ -1,0 +1,42 @@
+# Local services for the 05-integrations lessons (shared by Go-basics,
+# Rust-Basics, Python-Basics and OOPerl-basics: same project name, same ports).
+#
+# Start:  docker compose -f 05-integrations/compose.yaml up -d --wait
+# Stop:   docker compose -f 05-integrations/compose.yaml down
+#
+# Data lives in tmpfs, so every restart starts empty. Ports are bound to
+# 127.0.0.1 only and differ from the default 5432/6379 so they never clash
+# with another local Postgres or Redis.
+#
+# Lessons read these (defaults shown):
+#   DATABASE_URL=postgres://learning:learning@127.0.0.1:55432/learning
+#   REDIS_URL=redis://127.0.0.1:56379/0
+name: learning-services
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: learning
+      POSTGRES_PASSWORD: learning
+      POSTGRES_DB: learning
+    ports:
+      - "127.0.0.1:55432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U learning -d learning"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  redis:
+    image: redis:latest
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:56379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
