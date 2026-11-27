@@ -1,0 +1,5 @@
+# Binaries from go build land in the repo root without an extension
+bin/
+*.exe
+*.test
+*.out
